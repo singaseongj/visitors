@@ -1,0 +1,408 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+
+  font-family:
+    Arial,
+    "Noto Sans KR",
+    sans-serif;
+
+  background: #f7f7f7;
+  color: #222;
+}
+
+
+/* ============================================================
+   PAGE
+   ============================================================ */
+
+.page-container {
+  width: 100%;
+
+  padding: 40px 20px;
+}
+
+.comment-section {
+  width: 100%;
+  max-width: 950px;
+
+  margin: 0 auto;
+  padding: 24px;
+
+  background: #fff;
+
+  border-radius: 10px;
+}
+
+.comment-section h2 {
+  margin-top: 0;
+}
+
+
+/* ============================================================
+   FORM
+   ============================================================ */
+
+#commentForm {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+#commentAuthor,
+#commentPassword,
+#commentContent {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  font: inherit;
+
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  outline: none;
+}
+
+#commentAuthor:focus,
+#commentPassword:focus,
+#commentContent:focus {
+  border-color: #666;
+}
+
+#commentContent {
+  min-height: 80px;
+
+  resize: vertical;
+}
+
+
+/* ============================================================
+   FORM FOOTER
+   ============================================================ */
+
+.form-footer {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+}
+
+#characterCount {
+  font-size: 0.8rem;
+
+  color: #777;
+}
+
+#submitButton {
+  padding: 9px 16px;
+
+  border: 0;
+  border-radius: 6px;
+
+  background: #222;
+  color: #fff;
+
+  cursor: pointer;
+}
+
+#submitButton:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+#submitButton:disabled {
+  opacity: 0.5;
+
+  cursor: default;
+}
+
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+.status-message {
+  min-height: 20px;
+
+  margin-bottom: 10px;
+
+  font-size: 0.9rem;
+}
+
+.status-success {
+  color: #1d6b34;
+}
+
+.status-error {
+  color: #b00020;
+}
+
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+
+.table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+.comment-table {
+  width: 100%;
+
+  table-layout: fixed;
+
+  border-collapse: collapse;
+}
+
+.comment-table th,
+.comment-table td {
+  border: 1px solid transparent;
+
+  padding: 10px 8px;
+
+  text-align: left;
+  vertical-align: middle;
+}
+
+.comment-table th {
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  color: #666;
+}
+
+
+/* ============================================================
+   COLUMN WIDTHS
+   ============================================================ */
+
+.date-column {
+  width: 170px;
+}
+
+.content-column {
+  width: auto;
+}
+
+.author-column {
+  width: 120px;
+}
+
+.like-column {
+  width: 120px;
+}
+
+
+/* ============================================================
+   SORT BUTTONS
+   ============================================================ */
+
+.sort-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  font: inherit;
+  font-weight: 600;
+
+  color: #666;
+
+  cursor: pointer;
+}
+
+.sort-button:hover {
+  color: #222;
+}
+
+.sort-button span {
+  font-size: 0.8rem;
+}
+
+
+/* ============================================================
+   TABLE CELLS
+   ============================================================ */
+
+.comment-table td {
+  white-space: nowrap;
+}
+
+.comment-date-cell {
+  font-size: 0.82rem;
+
+  color: #777;
+}
+
+.comment-content-cell {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.comment-author-cell {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+
+.comment-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+
+/* ============================================================
+   LIKE BUTTON
+   ============================================================ */
+
+.like-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 4px 6px;
+
+  border: 0;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.like-button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.like-button:disabled {
+  cursor: default;
+}
+
+.like-button.liked {
+  opacity: 0.5;
+}
+
+.heart {
+  font-size: 1.1rem;
+}
+
+
+/* ============================================================
+   DELETE BUTTON
+   ============================================================ */
+
+.delete-button {
+  padding: 4px 6px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #888;
+
+  font-size: 0.75rem;
+
+  cursor: pointer;
+}
+
+.delete-button:hover:not(:disabled) {
+  color: #b00020;
+}
+
+.delete-button:disabled {
+  opacity: 0.5;
+
+  cursor: default;
+}
+
+
+/* ============================================================
+   EMPTY / LOADING
+   ============================================================ */
+
+.table-message {
+  padding: 24px !important;
+
+  text-align: center !important;
+
+  color: #777;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 650px) {
+
+  .page-container {
+    padding: 15px 8px;
+  }
+
+  .comment-section {
+    padding: 14px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .comment-table {
+    min-width: 650px;
+  }
+}
