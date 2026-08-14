@@ -3,6 +3,10 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 100vh;
   margin: 0;
 
   font-family:
@@ -65,6 +69,8 @@ body {
    ============================================================ */
 
 .page-container {
+  flex: 1;
+
   width: 100%;
 
   padding: 40px 20px;
@@ -87,19 +93,21 @@ body {
 }
 
 .page-footer {
-  padding: 0 20px 40px;
+  padding: 16px 20px 24px;
 
   text-align: center;
 }
 
 .page-footer a {
-  color: #666;
+  color: #999;
 
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  text-decoration: none;
 }
 
 .page-footer a:hover {
-  color: #222;
+  color: #666;
+  text-decoration: underline;
 }
 
 @media (max-width: 1180px) {
