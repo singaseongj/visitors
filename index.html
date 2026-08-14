@@ -190,7 +190,10 @@
   </footer>
 
   <footer class="page__footer" aria-label="방문자 수">
-    <div id="visit-counter" aria-live="polite">방문자 수를 불러오는 중입니다.</div>
+    <div id="visit-counter" class="visit-counter" aria-live="polite">
+      <span class="visit-counter__icon" aria-hidden="true">◉</span>
+      <span class="visit-counter__text">방문자 수를 불러오는 중입니다.</span>
+    </div>
   </footer>
 
   <script src="script.js"></script>
@@ -209,19 +212,22 @@
           data = JSON.parse(text);
         } catch {
           console.warn("Visit counter response is not JSON:", text);
-          counter.innerText = "방문자 수를 불러오지 못했습니다.";
+          counter.querySelector(".visit-counter__text").innerText =
+            "방문자 수를 불러오지 못했습니다.";
           return;
         }
 
         const daily = data?.daily ?? "-";
         const total = data?.total ?? "-";
-        counter.innerText = `today ${daily} ｜ total ${total} since 2026.5.28.`;
+        counter.querySelector(".visit-counter__text").innerText =
+          `today ${daily} ｜ total ${total} since 2026.5.28.`;
       })
       .catch((error) => {
         console.error("Visit counter fetch failed:", error);
         const counter = document.getElementById("visit-counter");
         if (counter) {
-          counter.innerText = "방문자 수를 불러오지 못했습니다.";
+          counter.querySelector(".visit-counter__text").innerText =
+            "방문자 수를 불러오지 못했습니다.";
         }
       });
   </script>
