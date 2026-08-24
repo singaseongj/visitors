@@ -37,9 +37,6 @@ const statusMessage =
 const characterCount =
   document.getElementById('characterCount');
 
-const googleAuthStatus =
-  document.getElementById('googleAuthStatus');
-
 const sortByDateButton =
   document.getElementById('sortByDate');
 
@@ -65,6 +62,7 @@ let currentSort = {
 };
 
 let googleCredential = '';
+let googleIdentityInitialized = false;
 
 
 /* ============================================================
@@ -72,10 +70,11 @@ let googleCredential = '';
    ============================================================ */
 
 function initializeGoogleIdentity() {
-  if (!window.google?.accounts?.id) {
-    googleAuthStatus.textContent =
-      'Google 로그인을 불러오지 못했습니다. 페이지를 새로고침해 주세요.';
+  if (googleIdentityInitialized) {
+    return true;
+  }
 
+  if (!window.google?.accounts?.id) {
     return false;
   }
 
@@ -92,6 +91,8 @@ function initializeGoogleIdentity() {
     use_fedcm_for_prompt: true
   });
 
+  googleIdentityInitialized = true;
+
   return true;
 }
 
@@ -103,8 +104,6 @@ function handleGoogleCredential(response) {
   }
 
   googleCredential = response.credential;
-  googleAuthStatus.textContent =
-    'Google 계정 인증이 완료되었습니다. "댓글 작성"을 다시 눌러주세요.';
 
   showStatus(
     'Google 계정 인증이 완료되었습니다. 댓글을 등록할 수 있습니다.',
@@ -114,7 +113,7 @@ function handleGoogleCredential(response) {
 
 
 function requestGoogleSignIn() {
-  if (!initializeGoogleIdentity()) {
+  if (!googleIdentityInitialized) {
     showStatus(
       'Google 로그인을 불러오지 못했습니다. 잠시 후 다시 시도하세요.',
       'error'
@@ -122,28 +121,15 @@ function requestGoogleSignIn() {
     return;
   }
 
-  googleAuthStatus.textContent =
-    'Google 로그인 창에서 사용할 계정을 선택해 주세요.';
-
   showStatus(
-    'Google 계정 인증 후 "댓글 작성"을 다시 눌러주세요.'
+    'Google 계정으로 로그인한 후 "댓글 작성"을 다시 눌러주세요.'
   );
 
-  window.google.accounts.id.prompt(notification => {
-    if (
-      notification.isNotDisplayed() ||
-      notification.isSkippedMoment()
-    ) {
-      googleAuthStatus.textContent =
-        'Google 로그인 창을 열지 못했습니다. 다시 시도해 주세요.';
-
-      showStatus(
-        'Google 로그인 창을 열지 못했습니다. 다시 시도해 주세요.',
-        'error'
-      );
-    }
-  });
+  window.google.accounts.id.prompt();
 }
+
+
+window.addEventListener('load', initializeGoogleIdentity);
 
 
 /* ============================================================
@@ -936,8 +922,9 @@ commentForm.addEventListener(
       return;
     }
 
-    if (password.length < 8 || password.length > 64) {
-      showStatus('비밀번호는 8~64자로 입력하세요.', 'error');
+    if (password.length < 4 || password.length > 64) {
+      showStatus('비밀번호는 4~64자로 입력하세요.', 'error');
+      passwordInput.focus();
       return;
     }
 
