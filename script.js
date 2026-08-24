@@ -37,6 +37,9 @@ const statusMessage =
 const characterCount =
   document.getElementById('characterCount');
 
+const googleAuthStatus =
+  document.getElementById('googleAuthStatus');
+
 const sortByDateButton =
   document.getElementById('sortByDate');
 
@@ -62,6 +65,7 @@ let currentSort = {
 };
 
 let googleCredential = '';
+let pendingComment = null;
 let googleIdentityInitialized = false;
 
 
@@ -71,29 +75,36 @@ let googleIdentityInitialized = false;
 
 function initializeGoogleIdentity() {
   if (googleIdentityInitialized) {
-    return true;
+    return;
   }
 
   if (!window.google?.accounts?.id) {
-    return false;
+    googleAuthStatus.textContent =
+      'Google 로그인을 불러오지 못했습니다.';
+    return;
   }
 
-  window.google.accounts.id.initialize({
+  google.accounts.id.initialize({
     client_id: GOOGLE_WEB_CLIENT_ID,
     callback: handleGoogleCredential,
-
-    // Google 버튼 클릭 시 popup UX 사용
     ux_mode: 'popup',
-
-    auto_select: false,
-
-    // 최신 브라우저에서는 FedCM 로그인 창 사용
-    use_fedcm_for_prompt: true
+    auto_select: false
   });
 
-  googleIdentityInitialized = true;
+  google.accounts.id.renderButton(
+    document.getElementById('googleSignInButton'),
+    {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'rectangular',
+      logo_alignment: 'left',
+      locale: 'ko'
+    }
+  );
 
-  return true;
+  googleIdentityInitialized = true;
 }
 
 
@@ -104,28 +115,18 @@ function handleGoogleCredential(response) {
   }
 
   googleCredential = response.credential;
+  googleAuthStatus.textContent = 'Google 로그인 완료';
 
   showStatus(
     'Google 계정 인증이 완료되었습니다. 댓글을 등록할 수 있습니다.',
     'success'
   );
-}
 
-
-function requestGoogleSignIn() {
-  if (!googleIdentityInitialized) {
-    showStatus(
-      'Google 로그인을 불러오지 못했습니다. 잠시 후 다시 시도하세요.',
-      'error'
-    );
-    return;
+  if (pendingComment) {
+    const comment = pendingComment;
+    pendingComment = null;
+    postComment(comment);
   }
-
-  showStatus(
-    'Google 계정으로 로그인한 후 "댓글 작성"을 다시 눌러주세요.'
-  );
-
-  window.google.accounts.id.prompt();
 }
 
 
@@ -942,7 +943,11 @@ commentForm.addEventListener(
     const comment = { author, password, content };
 
     if (!googleCredential) {
-      requestGoogleSignIn();
+      pendingComment = comment;
+      showStatus(
+        '댓글을 등록하려면 먼저 Google 계정으로 로그인하세요.',
+        'error'
+      );
       return;
     }
 
