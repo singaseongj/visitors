@@ -5,6 +5,9 @@
 const COMMENT_API =
   'https://script.google.com/macros/s/AKfycbwzgjE6rU-1LWYzKFZBVExfqrkbXKCa72BTBvF0yIvbFljo68610KoA2KqxlEya5AE47g/exec';
 
+const GOOGLE_WEB_CLIENT_ID =
+  '768920190384-cspfvf030mo4klnedn2le10aidcpe6eo.apps.googleusercontent.com';
+
 
 /* ============================================================
    ELEMENTS
@@ -34,6 +37,12 @@ const statusMessage =
 const characterCount =
   document.getElementById('characterCount');
 
+const googleAuthStatus =
+  document.getElementById('googleAuthStatus');
+
+const googleSignInButton =
+  document.getElementById('googleSignInButton');
+
 
 const sortByDateButton =
   document.getElementById('sortByDate');
@@ -58,6 +67,84 @@ let currentSort = {
   field: 'date',
   direction: 'desc'
 };
+
+let googleCredential = '';
+let pendingComment = null;
+
+
+/* ============================================================
+   GOOGLE AUTHENTICATION
+   ============================================================ */
+
+function initializeGoogleIdentity() {
+  if (!window.google?.accounts?.id) {
+    googleAuthStatus.textContent =
+      'Google 로그인을 불러오지 못했습니다. 페이지를 새로고침해 주세요.';
+    return false;
+  }
+
+  window.google.accounts.id.initialize({
+    client_id: GOOGLE_WEB_CLIENT_ID,
+    callback: handleGoogleCredential,
+    auto_select: false,
+    cancel_on_tap_outside: false
+  });
+
+  googleSignInButton.replaceChildren();
+  window.google.accounts.id.renderButton(googleSignInButton, {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    text: 'signin_with',
+    shape: 'rectangular',
+    locale: 'ko'
+  });
+
+  return true;
+}
+
+
+async function handleGoogleCredential(response) {
+  if (!response?.credential) {
+    showStatus('Google 계정 인증에 실패했습니다.', 'error');
+    return;
+  }
+
+  googleCredential = response.credential;
+  googleAuthStatus.textContent =
+    'Google 계정 인증이 완료되었습니다.';
+
+  if (pendingComment) {
+    const comment = pendingComment;
+    pendingComment = null;
+    await postComment(comment);
+  }
+}
+
+
+function requestGoogleSignIn() {
+  if (!initializeGoogleIdentity()) {
+    showStatus(
+      'Google 로그인을 불러오지 못했습니다. 잠시 후 다시 시도하세요.',
+      'error'
+    );
+    return;
+  }
+
+  googleAuthStatus.textContent =
+    'Google 로그인 창에서 사용할 계정을 선택해 주세요.';
+  showStatus('댓글을 작성하려면 Google 계정으로 로그인해 주세요.');
+
+  window.google.accounts.id.prompt(notification => {
+    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      googleAuthStatus.textContent =
+        '아래 Google 로그인 버튼을 눌러 인증해 주세요.';
+    }
+  });
+}
+
+
+window.addEventListener('load', initializeGoogleIdentity);
 
 
 /* ============================================================
@@ -827,204 +914,97 @@ function createCommentRow(comment) {
 commentForm.addEventListener(
   'submit',
   async event => {
-
     event.preventDefault();
 
-
-    const author =
-      authorInput.value.trim();
-
-    const password =
-      passwordInput.value;
-
-    const content =
-      contentInput.value.trim();
-
+    const author = authorInput.value.trim();
+    const password = passwordInput.value;
+    const content = contentInput.value.trim();
 
     if (!author) {
-
-      showStatus(
-        '작성자를 입력하세요.',
-        'error'
-      );
-
+      showStatus('작성자를 입력하세요.', 'error');
       authorInput.focus();
-
       return;
     }
-
 
     if (author.length > 30) {
-
-      showStatus(
-        '작성자는 30자 이하로 입력하세요.',
-        'error'
-      );
-
+      showStatus('작성자는 30자 이하로 입력하세요.', 'error');
       return;
     }
-
 
     if (!password) {
-
-      showStatus(
-        '비밀번호를 입력하세요.',
-        'error'
-      );
-
+      showStatus('비밀번호를 입력하세요.', 'error');
       passwordInput.focus();
-
       return;
     }
 
-
-    if (
-      password.length < 4 ||
-      password.length > 50
-    ) {
-
-      showStatus(
-        '비밀번호는 4~50자로 입력하세요.',
-        'error'
-      );
-
+    if (password.length < 8 || password.length > 64) {
+      showStatus('비밀번호는 8~64자로 입력하세요.', 'error');
       return;
     }
-
 
     if (!content) {
-
-      showStatus(
-        '내용을 입력하세요.',
-        'error'
-      );
-
+      showStatus('내용을 입력하세요.', 'error');
       contentInput.focus();
-
       return;
     }
-
 
     if (content.length > 100) {
-
-      showStatus(
-        '내용은 100자 이하로 입력하세요.',
-        'error'
-      );
-
+      showStatus('내용은 100자 이하로 입력하세요.', 'error');
       return;
     }
 
+    const comment = { author, password, content };
 
-    submitButton.disabled =
-      true;
-
-
-    showStatus(
-      '댓글을 등록하는 중...'
-    );
-
-
-    try {
-
-      const body =
-        new URLSearchParams();
-
-
-      body.set(
-        'action',
-        'comment'
-      );
-
-      body.set(
-        'author',
-        author
-      );
-
-      body.set(
-        'password',
-        password
-      );
-
-      body.set(
-        'content',
-        content
-      );
-
-
-      const response =
-        await fetch(
-          COMMENT_API,
-          {
-            method: 'POST',
-            body
-          }
-        );
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          `HTTP ${response.status}`
-        );
-      }
-
-
-      const data =
-        await response.json();
-
-
-      if (!data.success) {
-
-        throw new Error(
-          data.error ||
-          '댓글 작성에 실패했습니다.'
-        );
-      }
-
-
-      passwordInput.value =
-        '';
-
-      contentInput.value =
-        '';
-
-      characterCount.textContent =
-        '0 / 100';
-
-
-      showStatus(
-        '댓글이 등록되었습니다.',
-        'success'
-      );
-
-
-      await loadComments();
-
-
-    } catch (error) {
-
-      console.error(
-        'Failed to post comment:',
-        error
-      );
-
-
-      showStatus(
-        error.message ||
-        '댓글 작성에 실패했습니다.',
-        'error'
-      );
-
-
-    } finally {
-
-      submitButton.disabled =
-        false;
+    if (!googleCredential) {
+      pendingComment = comment;
+      requestGoogleSignIn();
+      return;
     }
+
+    await postComment(comment);
   }
 );
 
+
+async function postComment({ author, password, content }) {
+  submitButton.disabled = true;
+  showStatus('댓글을 등록하는 중...');
+
+  try {
+    const body = new URLSearchParams();
+    body.set('action', 'comment');
+    body.set('author', author);
+    body.set('password', password);
+    body.set('content', content);
+    body.set('credential', googleCredential);
+
+    const response = await fetch(COMMENT_API, {
+      method: 'POST',
+      body
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || '댓글 작성에 실패했습니다.');
+    }
+
+    passwordInput.value = '';
+    contentInput.value = '';
+    characterCount.textContent = '0 / 100';
+    showStatus('댓글이 등록되었습니다.', 'success');
+    await loadComments();
+  } catch (error) {
+    console.error('Failed to post comment:', error);
+    showStatus(error.message || '댓글 작성에 실패했습니다.', 'error');
+  } finally {
+    submitButton.disabled = false;
+  }
+}
 
 /* ============================================================
    LIKE
