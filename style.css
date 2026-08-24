@@ -596,3 +596,63 @@ body {
     min-width: 650px;
   }
 }
+
+/* Google sign-in help tooltip */
+.google-sign-in-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.google-auth-help {
+  position: relative;
+  display: inline-flex;
+}
+
+.google-auth-help-button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid #aaa;
+  border-radius: 50%;
+  background: #fff;
+  color: #666;
+  font: 700 0.8rem/20px sans-serif;
+  cursor: help;
+}
+
+.google-auth-help-button:hover,
+.google-auth-help-button:focus-visible {
+  border-color: #555;
+  color: #222;
+  outline: none;
+}
+
+.google-auth-note {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: min(290px, calc(100vw - 32px));
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgb(0 0 0 / 14%);
+  color: #444;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  pointer-events: none;
+}
+
+.google-auth-help:hover .google-auth-note,
+.google-auth-help:focus-within .google-auth-note {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
