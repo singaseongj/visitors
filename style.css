@@ -92,6 +92,49 @@ body {
   margin-top: 0;
 }
 
+.google-auth-info {
+  margin: 0 0 24px;
+  padding: 18px 20px;
+
+  border: 1px solid #e2e2e2;
+  border-left: 4px solid #666;
+  border-radius: 8px;
+
+  background: #fafafa;
+  color: #555;
+}
+
+.google-auth-info h2 {
+  margin: 0 0 10px;
+
+  color: #222;
+  font-size: 1rem;
+}
+
+.google-auth-info p {
+  margin: 7px 0;
+
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.google-auth-info a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-top: 8px;
+
+  color: #444;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.google-auth-info a:hover {
+  color: #000;
+}
+
 .page-footer {
   padding: 16px 20px 24px;
 
@@ -530,6 +573,10 @@ body {
 
   .comment-section {
     padding: 14px;
+  }
+
+  .google-auth-info {
+    padding: 15px 16px;
   }
 
   .form-row {
