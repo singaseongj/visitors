@@ -120,10 +120,26 @@
 
           <div class="form-controls">
             <div class="form-actions">
-              <div
-                id="googleSignInButton"
-                class="google-sign-in-button"
-              ></div>
+              <div class="google-sign-in-group">
+                <div
+                  id="googleSignInButton"
+                  class="google-sign-in-button"
+                ></div>
+
+                <div class="google-auth-help">
+                  <button
+                    type="button"
+                    class="google-auth-help-button"
+                    aria-label="Google 계정 인증 안내"
+                    aria-describedby="googleAuthNote"
+                  >?</button>
+
+                  <p id="googleAuthNote" class="google-auth-note" role="tooltip">
+                    익명 댓글 악용 방지를 위해 댓글 작성 시 Google 계정 인증이 필요합니다.
+                    Google 계정 이름과 이메일은 댓글에 표시되지 않습니다.
+                  </p>
+                </div>
+              </div>
 
               <button
                 id="submitButton"
